@@ -2,7 +2,7 @@
 * 1. [Versions](#Versions)
 * 2. [Requirements](#Requirements)
 * 3. [Environment variables](#Environmentvariables)
-* 4. [Examples](#Examples)
+* 4. [Example](#Example)
 * 5. [Project-License](#Project-License)
 
 <!-- vscode-markdown-toc-config
@@ -42,10 +42,21 @@ If you need special versions, please feel free to contact me or create a fork.
 - `SMARTHOST_FORCE_FROM` Replaces the from address with the specified one (default: *empty*)
 
 
-##  4. <a name='Examples'></a>Examples
+##  4. <a name='Example'></a>Example
 
+```bash
+docker run --rm -it \
+  --name smarthost \
+  -e SMARTHOST_HOST=mail.example.com \
+  -e SMARTHOST_PORT=465 \
+  -e SMARTHOST_USER=user@example.com \   
+  -e SMARTHOST_PASSWORD=mySecretPassword \
+  -e SMARTHOST_DOMAIN=example.com \
+  -e SMARTHOST_FORCE_FROM="Firstname Lastname <user@example.com>" \
+  -e SMARTHOST_ADD_MISSING_HEADERS="true" \
+    registry.gitlab.com/epicdocker/smarthost:latest
+```
 
 ##  5. <a name='Project-License'></a>Project-License
 
 MIT License see [LICENSE](LICENSE)
-
