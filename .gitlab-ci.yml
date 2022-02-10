@@ -1,0 +1,49 @@
+stages:
+  - build
+  - release
+
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+after_script:
+  - docker logout
+  - docker logout $CI_REGISTRY
+
+latest:
+  stage: build
+  script:
+    - docker build --pull --no-cache -t $CI_REGISTRY_IMAGE:latest . --build-arg IMAGE_TAG=latest
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - master
+
+edge:
+  stage: build
+  script:
+    - docker build --pull --no-cache -t $CI_REGISTRY_IMAGE:edge . --build-arg IMAGE_TAG=edge
+    - docker push $CI_REGISTRY_IMAGE:edge
+  only:
+    - master
+
+DockerHub:
+  stage: release
+  variables:
+    DOCKER_REGISTRY: "epicsoft/smarthost"
+  before_script:
+    - docker login -u="$DOCKER_HUB_USER" -p="$DOCKER_HUB_PASS"
+  script:
+    #### latest
+    - docker pull $CI_REGISTRY_IMAGE:latest
+    - docker tag $CI_REGISTRY_IMAGE:latest $DOCKER_REGISTRY:latest
+    - docker push $DOCKER_REGISTRY:latest
+    #### edge
+    - docker pull $CI_REGISTRY_IMAGE:edge
+    - docker tag $CI_REGISTRY_IMAGE:edge $DOCKER_REGISTRY:edge
+    - docker push $DOCKER_REGISTRY:edge
+  only:
+    - master
