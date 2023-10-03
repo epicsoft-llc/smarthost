@@ -40,7 +40,7 @@ If you need special versions, please feel free to contact me or create a fork.
 - `SMARTHOST_NETWORKS` The list of trusted remote SMTP clients  (default: `192.168.0.0/16,172.16.0.0/12`)
 - `SMARTHOST_ADD_MISSING_HEADERS` Add headers when not present (default: `true`)
 - `SMARTHOST_FORCE_FROM` Replaces the from address with the specified one (default: *empty*)
-
+- `SMARTHOST_INIT_ALIAS_DATABASE` Initialize the alias database (default: `true`)
 
 ##  4. <a name='Example'></a>Example
 

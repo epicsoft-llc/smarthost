@@ -68,7 +68,7 @@ postconf -e myorigin=${SMARTHOST_DOMAIN}
 postconf -e mydestination=localhost
 postconf -e mynetworks=${SMARTHOST_NETWORKS}
 
-if [ ! -z "$(echo ${SMARTHOST_ADD_MISSING_HEADERS} | grep -i -E "(yes|true|1)")" ]; then
+if [ ! -z "$(echo ${SMARTHOST_ADD_MISSING_HEADERS} | grep -i -E "(y|yes|true|1)")" ]; then
   postconf -e always_add_missing_headers=yes
 else
   postconf -e always_add_missing_headers=no
@@ -80,7 +80,7 @@ echo "[${SMARTHOST_HOST}]:${SMARTHOST_PORT} ${SMARTHOST_USER}:${SMARTHOST_PASSWO
 postmap /etc/postfix/sasl_passwd
 
 #### TLS
-if [ ! -z "$(echo ${SMARTHOST_USE_TLS} | grep -i -E "(yes|true|1)")" ]; then
+if [ ! -z "$(echo ${SMARTHOST_USE_TLS} | grep -i -E "(y|yes|true|1)")" ]; then
   postconf -e smtp_use_tls=yes
 fi
 
@@ -95,6 +95,14 @@ if [ ! -z "${SMARTHOST_FORCE_FROM}" ]; then
   echo "/^From:.*$/ REPLACE From: ${SMARTHOST_FORCE_FROM}" > /etc/postfix/header_check
   postconf -e smtp_header_checks=regexp:/etc/postfix/header_check
   postmap /etc/postfix/header_check
+fi
+
+#### Fix: 'error: open database /etc/postfix/aliases.lmdb: No such file or directory'
+#### see https://serverfault.com/a/1105901
+#### Thanks to Eric
+if [ ! -z "$(echo ${SMARTHOST_INIT_ALIAS_DATABASE} | grep -i -E "(y|yes|true|1)")" ]; then
+  echo "Initialize the alias database"
+  newaliases
 fi
 
 echo "Configuration success"
