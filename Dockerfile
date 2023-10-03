@@ -1,11 +1,21 @@
 ARG IMAGE_TAG=latest
 FROM alpine:$IMAGE_TAG
 
+ARG BUILD_DATE="development"
+LABEL org.label-schema.name="Smarthost" \
+      org.label-schema.description="Docker Image for Smarthost (SMTP relay) based on Alpine Linux" \
+      org.label-schema.vendor="epicsoft LLC / Alexander Schwarz <as@epicsoft.one>" \
+      org.label-schema.version="latest" \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.build-date="$BUILD_DATE" \
+      org.label-schema.url="https://gitlab.com/epicdocker/smarthost" \
+      org.label-schema.vcs-url="https://gitlab.com/epicdocker/smarthost/tree/master"
+
 LABEL image.name="epicsoft_smarthost" \
       image.description="Docker Image for Smarthost (SMTP relay) based on Alpine Linux" \
-      maintainer="epicsoft.de" \
-      maintainer.name="Alexander Schwarz <schwarz@epicsoft.de>" \
-      maintainer.copyright="Copyright 2022 epicsoft.de / Alexander Schwarz" \
+      maintainer="epicsoft LLC" \
+      maintainer.name="Alexander Schwarz <as@epicsoft.one>" \
+      maintainer.copyright="Copyright 2022-2023 epicsoft LLC / Alexander Schwarz" \
       license="MIT"
 
 ENV SMARTHOST_HOST ""
