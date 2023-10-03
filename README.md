@@ -1,3 +1,5 @@
+# Smarthost
+
 <!-- vscode-markdown-toc -->
 * 1. [Versions](#Versions)
 * 2. [Requirements](#Requirements)
@@ -11,10 +13,7 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-# Smarthost
-
 Docker Image for Smarthost (SMTP relay) based on Alpine Linux
-
 
 ##  1. <a name='Versions'></a>Versions
 
@@ -23,11 +22,9 @@ If you need special versions, please feel free to contact me or create a fork.
 
 `latest` and `edge` [Dockerfile](https://gitlab.com/epicdocker/smarthost/-/blob/master/Dockerfile)
 
-
 ##  2. <a name='Requirements'></a>Requirements
 
 - Docker installed - https://www.docker.com/get-started
-
 
 ##  3. <a name='Environmentvariables'></a>Environment variables
 
