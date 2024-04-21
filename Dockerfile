@@ -3,19 +3,20 @@ FROM alpine:$IMAGE_TAG
 
 ARG BUILD_DATE="development"
 LABEL org.label-schema.name="Smarthost" \
-      org.label-schema.description="Docker Image for Smarthost (SMTP relay) based on Alpine Linux" \
+      org.label-schema.description="Docker Image for Smarthost (SMTP relay) based on official Alpine image" \
       org.label-schema.vendor="epicsoft LLC / Alexander Schwarz <as@epicsoft.one>" \
-      org.label-schema.version="latest" \
-      org.label-schema.schema-version="1.0" \
-      org.label-schema.build-date="$BUILD_DATE" \
       org.label-schema.url="https://gitlab.com/epicdocker/smarthost" \
       org.label-schema.vcs-url="https://gitlab.com/epicdocker/smarthost/tree/master"
+      org.label-schema.version="1.0" \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.build-date="$BUILD_DATE" \
 
 LABEL image.name="epicsoft_smarthost" \
-      image.description="Docker Image for Smarthost (SMTP relay) based on Alpine Linux" \
+      image.description="Docker Image for Smarthost (SMTP relay) based on official Alpine image" \
       maintainer="epicsoft LLC" \
       maintainer.name="Alexander Schwarz <as@epicsoft.one>" \
-      maintainer.copyright="Copyright 2022-2023 epicsoft LLC / Alexander Schwarz" \
+      maintainer.url="https://epicsoft.one/" \
+      maintainer.copyright="Copyright 2022-2024 epicsoft LLC / Alexander Schwarz" \
       license="MIT"
 
 ENV SMARTHOST_HOST ""
@@ -38,4 +39,4 @@ RUN apk --no-cache add bash \
 
 ADD smarthost.sh smarthost.sh
 
-CMD ["bash", "smarthost.sh"]
+CMD [ "bash", "smarthost.sh" ]

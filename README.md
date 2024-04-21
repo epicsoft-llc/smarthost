@@ -1,32 +1,32 @@
 # Smarthost
 
-<!-- vscode-markdown-toc -->
-* 1. [Versions](#Versions)
-* 2. [Requirements](#Requirements)
-* 3. [Environment variables](#Environmentvariables)
-* 4. [Example](#Example)
-* 5. [Project-License](#Project-License)
+This Docker image is managed and kept up to date by [epicsoft LLC](https://epicsoft.one).
 
-<!-- vscode-markdown-toc-config
-	numbering=true
-	autoSave=true
-	/vscode-markdown-toc-config -->
-<!-- /vscode-markdown-toc -->
+Unlighthouse based on official [alpine](https://hub.docker.com/_/alpine) image.
 
-Docker Image for Smarthost (SMTP relay) based on Alpine Linux
+This Docker image uses [postfix](https://pkgs.alpinelinux.org/packages?name=postfix) to create an SMTP relay.
 
-##  1. <a name='Versions'></a>Versions
+* Base image: https://hub.docker.com/_/alpine
+* Dockerfile: TODO
+* Repository: TODO
+* Container-Registry: TODO
+* Docker Hub: https://hub.docker.com/r/epicsoft/smarthost
 
-Two current versions `latest` and `edge` of this project are always built weekly.  
-If you need special versions, please feel free to contact me or create a fork.
+## Description
 
-`latest` and `edge` [Dockerfile](https://gitlab.com/epicdocker/smarthost/-/blob/master/Dockerfile)
+Docker Image for Smarthost (SMTP relay) based on official Alpine image.
 
-##  2. <a name='Requirements'></a>Requirements
+This image can be used
+- Central SMTP relay for multiple Docker containers
+- If applications cannot establish an encrypted connection to an SMTP server 
+- The container is not granted Internet access, but emails should still be sent
+- *Other possible uses for forwarding emails*
 
-- Docker installed - https://www.docker.com/get-started
+## Versions
 
-##  3. <a name='Environmentvariables'></a>Environment variables
+`latest` based on `alpine:latest` - build `weekly`
+
+## Environment variables
 
 - `SMARTHOST_HOST` The remote SMTP server address ***required***
 - `SMARTHOST_PORT` The remote SMTP server port (default: `587`)
@@ -40,7 +40,7 @@ If you need special versions, please feel free to contact me or create a fork.
 - `SMARTHOST_INIT_ALIAS_DATABASE` Initialize the alias database (default: `true`)
 - `TZ` Defines the time zone for the Docker container (default: *unset*)
 
-##  4. <a name='Example'></a>Example
+## Example
 
 ```bash
 docker run --rm -it \
@@ -55,6 +55,8 @@ docker run --rm -it \
     registry.gitlab.com/epicdocker/smarthost:latest
 ```
 
-##  5. <a name='Project-License'></a>Project-License
+## License
 
 MIT License see [LICENSE](LICENSE)
+
+Please note that the MIT license only applies to the files created by epicsoft LLC. Other software may be licensed under other licenses.
