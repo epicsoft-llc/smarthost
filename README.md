@@ -7,9 +7,9 @@ Unlighthouse based on official [alpine](https://hub.docker.com/_/alpine) image.
 This Docker image uses [postfix](https://pkgs.alpinelinux.org/packages?name=postfix) to create an SMTP relay.
 
 * Base image: https://hub.docker.com/_/alpine
-* Dockerfile: TODO
-* Repository: TODO
-* Container-Registry: TODO
+* Dockerfile: https://gitlab.com/epicsoft-networks/smarthost/blob/master/Dockerfile
+* Repository: https://gitlab.com/epicsoft-networks/smarthost/tree/master
+* Container-Registry: https://gitlab.com/epicsoft-networks/smarthost/container_registry
 * Docker Hub: https://hub.docker.com/r/epicsoft/smarthost
 
 ## Description
@@ -52,11 +52,11 @@ docker run --rm -it \
   -e SMARTHOST_DOMAIN=example.com \
   -e SMARTHOST_FORCE_FROM="Firstname Lastname <user@example.com>" \
   -e SMARTHOST_ADD_MISSING_HEADERS="true" \
-    registry.gitlab.com/epicdocker/smarthost:latest
+    registry.gitlab.com/epicsoft-networks/smarthost:latest
 ```
 
 ## License
 
-MIT License see [LICENSE](LICENSE)
+MIT License see [LICENSE](https://gitlab.com/epicsoft-networks/smarthost/blob/master/LICENSE)
 
 Please note that the MIT license only applies to the files created by epicsoft LLC. Other software may be licensed under other licenses.
