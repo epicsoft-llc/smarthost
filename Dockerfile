@@ -6,10 +6,10 @@ LABEL org.label-schema.name="Smarthost" \
       org.label-schema.description="Docker Image for Smarthost (SMTP relay) based on official Alpine image" \
       org.label-schema.vendor="epicsoft LLC / Alexander Schwarz <as@epicsoft.one>" \
       org.label-schema.url="https://gitlab.com/epicdocker/smarthost" \
-      org.label-schema.vcs-url="https://gitlab.com/epicdocker/smarthost/tree/master"
-      org.label-schema.version="1.0" \
+      org.label-schema.vcs-url="https://gitlab.com/epicdocker/smarthost/tree/master" \
+      org.label-schema.version=${IMAGE_TAG} \
       org.label-schema.schema-version="1.0" \
-      org.label-schema.build-date="$BUILD_DATE" \
+      org.label-schema.build-date=${BUILD_DATE}
 
 LABEL image.name="epicsoft_smarthost" \
       image.description="Docker Image for Smarthost (SMTP relay) based on official Alpine image" \
