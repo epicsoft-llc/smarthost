@@ -30,6 +30,7 @@ ENV SMARTHOST_FORCE_FROM ""
 ENV SMARTHOST_INIT_ALIAS_DATABASE "true"
 
 RUN apk --no-cache add bash \
+                       tzdata \
                        postfix \
                        ca-certificates \
  && update-ca-certificates \
