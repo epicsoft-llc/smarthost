@@ -2,7 +2,7 @@
 
 This Docker image is managed and kept up to date by [epicsoft LLC](https://epicsoft.one).
 
-Unlighthouse based on official [alpine](https://hub.docker.com/_/alpine) image.
+Smarthost based on official [alpine](https://hub.docker.com/_/alpine) image.
 
 This Docker image uses [postfix](https://pkgs.alpinelinux.org/packages?name=postfix) to create an SMTP relay.
 
