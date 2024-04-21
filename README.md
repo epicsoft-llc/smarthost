@@ -52,7 +52,7 @@ docker run --rm -it \
   -e SMARTHOST_DOMAIN=example.com \
   -e SMARTHOST_FORCE_FROM="Firstname Lastname <user@example.com>" \
   -e SMARTHOST_ADD_MISSING_HEADERS="true" \
-    registry.gitlab.com/epicsoft-networks/smarthost:latest
+    epicsoft/smarthost:latest
 ```
 
 ## License
