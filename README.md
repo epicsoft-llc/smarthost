@@ -45,12 +45,12 @@ This image can be used
 ```bash
 docker run --rm -it \
   --name smarthost \
-  -e SMARTHOST_HOST=mail.example.com \
+  -e SMARTHOST_HOST=mail.your-business.ge \
   -e SMARTHOST_PORT=465 \
-  -e SMARTHOST_USER=user@example.com \   
+  -e SMARTHOST_USER=info@your-business.ge \
   -e SMARTHOST_PASSWORD=mySecretPassword \
-  -e SMARTHOST_DOMAIN=example.com \
-  -e SMARTHOST_FORCE_FROM="Firstname Lastname <user@example.com>" \
+  -e SMARTHOST_DOMAIN=your-business.ge \
+  -e SMARTHOST_FORCE_FROM="Your Business LLC <info@your-business.ge>" \
   -e SMARTHOST_ADD_MISSING_HEADERS="true" \
     epicsoft/smarthost:latest
 ```
