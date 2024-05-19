@@ -32,6 +32,7 @@ latest:
         --build-arg IMAGE_TAG=${VERSION}
         --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
     - docker run --rm ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version
+  retry: 2
   only:
     - master
 
@@ -45,5 +46,6 @@ uploadReadme:
       -e SHORT_DESCRIPTION="Docker Image for Smarthost (SMTP relay) based on official Alpine image"
       -e README_FILEPATH='/workspace/README.md'
         peterevans/dockerhub-description:latest
+  retry: 2
   only:
     - master
