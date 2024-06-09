@@ -34,8 +34,8 @@ if [ -z "${SMARTHOST_PASSWORD}" ]; then
   echo "You need to set the 'SMARTHOST_PASSWORD' environment variable."
   exit 104
 fi
-if [ -z "${SMARTHOST_USE_TLS}" ]; then
-  echo "You need to set the 'SMARTHOST_USE_TLS' environment variable."
+if [ -z "${SMARTHOST_TLS_SECURITY_LEVEL}" ]; then
+  echo "You need to set the 'SMARTHOST_TLS_SECURITY_LEVEL' environment variable."
   exit 105
 fi
 if [ -z "${SMARTHOST_NETWORKS}" ]; then
@@ -79,9 +79,9 @@ postconf -e relayhost="[${SMARTHOST_HOST}]:${SMARTHOST_PORT}";
 echo "[${SMARTHOST_HOST}]:${SMARTHOST_PORT} ${SMARTHOST_USER}:${SMARTHOST_PASSWORD}" > /etc/postfix/sasl_passwd
 postmap /etc/postfix/sasl_passwd
 
-#### TLS
-if [ ! -z "$(echo ${SMARTHOST_USE_TLS} | grep -i -E "(y|yes|true|1)")" ]; then
-  postconf -e smtp_use_tls=yes
+#### TLS support
+if [ ! -z "${SMARTHOST_TLS_SECURITY_LEVEL}" ]; then
+  postconf -e smtp_tls_security_level=${SMARTHOST_TLS_SECURITY_LEVEL}
 fi
 
 #### Port 465

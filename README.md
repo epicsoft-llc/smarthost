@@ -32,13 +32,23 @@ This image can be used
 - `SMARTHOST_PORT` The remote SMTP server port (default: `587`)
 - `SMARTHOST_USER` The username to authenticate with the remote SMTP server ***required***
 - `SMARTHOST_PASSWORD` The password to authenticate with the remote SMTP server ***required***
-- `SMARTHOST_DOMAIN` The domain to append to mails  ***required***
-- `SMARTHOST_USE_TLS` Use TLS for communication with SMTP server (default: `true`)
+- `SMARTHOST_DOMAIN` The domain to append to mails ***required***
+- `SMARTHOST_TLS_SECURITY_LEVEL` Configuring TLS support (default `may`)
 - `SMARTHOST_NETWORKS` The list of trusted remote SMTP clients  (default: `192.168.0.0/16,172.16.0.0/12`)
 - `SMARTHOST_ADD_MISSING_HEADERS` Add headers when not present (default: `true`)
 - `SMARTHOST_FORCE_FROM` Replaces the from address with the specified one (default: *empty*)
 - `SMARTHOST_INIT_ALIAS_DATABASE` Initialize the alias database (default: `true`)
 - `TZ` Defines the time zone for the Docker container (default: *unset*)
+
+**SMARTHOST_TLS_SECURITY_LEVEL** - possible values:
+- `none` - No TLS
+- `may` - Opportunistic TLS
+- `encrypt` - Mandatory TLS encryption
+- `dane` - Opportunistic DANE TLS
+- `dane-only` - Mandatory DANE TLS
+- `fingerprint` - Certificate fingerprint verification
+- `verify` - Mandatory server certificate verification
+- `secure` - Secure-channel TLS
 
 ## Example
 
