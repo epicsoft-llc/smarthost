@@ -1,6 +1,7 @@
 ARG IMAGE_TAG=latest
 FROM alpine:$IMAGE_TAG
 
+ARG IMAGE_TAG=latest
 ARG BUILD_DATE="development"
 LABEL org.label-schema.name="Smarthost" \
       org.label-schema.description="Docker Image for Smarthost (SMTP relay) based on official Alpine image" \
