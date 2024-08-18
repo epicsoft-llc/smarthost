@@ -24,7 +24,8 @@ develop:
     VERSION: "develop"
   script:
     - echo "Build Smarthost Docker image with version '${VERSION}'"
-    - docker buildx use epicbuilder || docker context create epicbuilder && docker buildx create --name epicbuilder --use --bootstrap
+    - docker buildx ls
+    - docker buildx use epicbuilder || docker context create epiccontext && docker buildx create --driver=docker-container --name=epicbuilder --use --bootstrap
     - docker buildx build . --push --pull --no-cache
         --platform linux/amd64,linux/arm64
         -t ${CI_REGISTRY_IMAGE}:${VERSION}
