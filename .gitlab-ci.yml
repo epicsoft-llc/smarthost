@@ -30,7 +30,7 @@ develop:
     - docker buildx build . --push --pull --no-cache
         --platform linux/amd64,linux/arm64
         -t ${CI_REGISTRY_IMAGE}:${VERSION}
-        --build-arg IMAGE_TAG=${VERSION}
+        --build-arg IMAGE_TAG=latest
         --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
     - docker run --rm ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version
   only:
