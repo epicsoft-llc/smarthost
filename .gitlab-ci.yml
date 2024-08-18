@@ -21,6 +21,22 @@ after_script:
 latest:
   stage: build
   variables:
+    VERSION: "develop"
+  script:
+    - echo "Build Smarthost Docker image with version '${VERSION}'"
+    - docker buildx use epicbuilder || docker buildx create --name epicbuilder --use --bootstrap
+    - docker buildx build . --push --pull --no-cache
+        --platform linux/amd64,linux/arm64
+        -t ${CI_REGISTRY_IMAGE}:${VERSION}
+        --build-arg IMAGE_TAG=${VERSION}
+        --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+    - docker run --rm ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version
+  only:
+    - develop
+
+latest:
+  stage: build
+  variables:
     VERSION: "latest"
   script:
     - echo "Build Smarthost Docker image with version '${VERSION}'"
