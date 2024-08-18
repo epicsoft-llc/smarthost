@@ -18,7 +18,7 @@ after_script:
   - docker logout $CI_REGISTRY
   - docker logout
 
-latest:
+develop:
   stage: build
   variables:
     VERSION: "develop"
