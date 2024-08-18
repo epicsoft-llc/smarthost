@@ -13,10 +13,27 @@ variables:
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker login -u="$DOCKER_HUB_USER" -p="$DOCKER_HUB_TOKEN"
+  - docker context create epiccontext
+  - docker buildx create --driver=docker-container --name=epicbuilder --use --bootstrap epiccontext
 
 after_script:
   - docker logout $CI_REGISTRY
   - docker logout
+
+develop:
+  stage: build
+  variables:
+    VERSION: "develop"
+  script:
+    - echo "Build Smarthost Docker image with version '${VERSION}'"
+    - docker buildx build . --push --pull --no-cache
+        --platform linux/amd64,linux/arm64
+        -t ${CI_REGISTRY_IMAGE}:${VERSION}
+        --build-arg IMAGE_TAG=latest
+        --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+    - docker run --rm ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version
+  only:
+    - develop
 
 latest:
   stage: build
@@ -24,7 +41,6 @@ latest:
     VERSION: "latest"
   script:
     - echo "Build Smarthost Docker image with version '${VERSION}'"
-    - docker buildx use epicbuilder > /dev/null 2>&1 || docker buildx create --name epicbuilder --use > /dev/null 2>&1
     - docker buildx build . --push --pull --no-cache
         --platform linux/amd64,linux/arm64
         -t ${CI_REGISTRY_IMAGE}:${VERSION}
