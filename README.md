@@ -37,7 +37,8 @@ This image can be used
 - `SMARTHOST_NETWORKS` The list of trusted remote SMTP clients, comma separated **without spaces**  (default: `192.168.0.0/16,172.16.0.0/12`)
 - `SMARTHOST_ADD_MISSING_HEADERS` Add headers when not present (default: `true`)
 - `SMARTHOST_FORCE_FROM` Replaces the from address with the specified one (default: *empty*)  
-  Rewrites the visible `From:` header only, not the envelope sender
+  Rewrites the visible `From:` header only, not the envelope sender  
+  A `$` in the value is taken literally, no escaping needed
 - `SMARTHOST_INIT_ALIAS_DATABASE` Initialize the alias database (default: `true`)
 - `TZ` Defines the time zone for the Docker container (default: *unset*)
 
@@ -70,6 +71,10 @@ distinct code per missing variable:
 | `106` | `SMARTHOST_NETWORKS` |
 | `107` | `SMARTHOST_DOMAIN` |
 | `108` | `SMARTHOST_ADD_MISSING_HEADERS` |
+| `109` | any of the above, or `SMARTHOST_FORCE_FROM`, given as more than one line |
+
+No value may span more than one line. A second line would become a further entry in the
+generated Postfix map - another set of relay credentials, or another header rewrite rule.
 
 ## Example
 

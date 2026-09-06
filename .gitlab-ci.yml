@@ -38,6 +38,7 @@ develop:
         -t ${CI_REGISTRY_IMAGE}:${VERSION}
         --build-arg IMAGE_TAG=latest
         --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+        --build-arg VCS_REF=${CI_COMMIT_SHORT_SHA}
     #### Versions, once per platform
     - for platform in $(echo $BUILD_PLATFORMS | tr ',' ' '); do
         docker run --rm --platform $platform ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version;
@@ -59,6 +60,7 @@ latest:
         -t ${DOCKER_REGISTRY}:${VERSION}
         --build-arg IMAGE_TAG=${VERSION}
         --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+        --build-arg VCS_REF=${CI_COMMIT_SHORT_SHA}
     #### Versions, once per platform
     - for platform in $(echo $BUILD_PLATFORMS | tr ',' ' '); do
         docker run --rm --platform $platform ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version;

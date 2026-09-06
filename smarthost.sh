@@ -51,6 +51,32 @@ if [ -z "${SMARTHOST_ADD_MISSING_HEADERS}" ]; then
   exit 108
 fi
 
+#### A newline in any of these is never a valid value, and every one of them ends up in a
+#### file or on a postconf command line where a second line means something:
+####   - in SMARTHOST_FORCE_FROM it appends further header_checks rules, up to a REDIRECT
+####     that would divert mail without a trace in the configuration
+####   - in SMARTHOST_USER or SMARTHOST_PASSWORD it appends further entries to the sasl
+####     map, which are credentials for another relay host
+####   - anywhere postconf sees it, the run dies with the unhelpful
+####     'postconf: fatal: -e, -X, or -# accepts no multi-line input'
+#### A carriage return counts too: it does not end a line here, but it travels into the
+#### password unseen and turns an authentication failure into a puzzle.
+for SMARTHOST_VARIABLE in SMARTHOST_HOST \
+                          SMARTHOST_PORT \
+                          SMARTHOST_USER \
+                          SMARTHOST_PASSWORD \
+                          SMARTHOST_DOMAIN \
+                          SMARTHOST_TLS_SECURITY_LEVEL \
+                          SMARTHOST_NETWORKS \
+                          SMARTHOST_FORCE_FROM; do
+  case "${!SMARTHOST_VARIABLE}" in
+    *$'\n'* | *$'\r'* )
+      echo "The '${SMARTHOST_VARIABLE}' environment variable must be a single line."
+      exit 109
+      ;;
+  esac
+done
+
 echo "Set variables successfully checked"
 echo "Configuration is performed"
 
@@ -103,7 +129,13 @@ fi
 #### No postmap here: regexp maps are read as plain text, compiling one produces an
 #### unused .lmdb file in which postmap lowercases the pattern
 if [ ! -z "${SMARTHOST_FORCE_FROM}" ]; then
-  echo "/^From:.*$/ REPLACE From: ${SMARTHOST_FORCE_FROM}" > /etc/postfix/header_check
+  #### In the replacement of a regexp map a '$' starts a back-reference. The pattern has
+  #### no capture group, so an unescaped '$' does not fail the start - it makes postfix
+  #### drop the rule at delivery time with 'out of range replacement index', and the mail
+  #### then goes out with its original From and status=sent. '$$' is the literal '$'.
+  SMARTHOST_FORCE_FROM_ESCAPED="${SMARTHOST_FORCE_FROM//\$/\$\$}"
+
+  echo "/^From:.*$/ REPLACE From: ${SMARTHOST_FORCE_FROM_ESCAPED}" > /etc/postfix/header_check
   postconf -e "smtp_header_checks=regexp:/etc/postfix/header_check"
 fi
 

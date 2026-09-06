@@ -3,14 +3,29 @@ FROM alpine:$IMAGE_TAG
 
 ARG IMAGE_TAG=latest
 ARG BUILD_DATE="development"
+ARG VCS_REF="development"
 LABEL org.label-schema.name="Smarthost" \
       org.label-schema.description="Docker Image for Smarthost (SMTP relay) based on official Alpine image" \
       org.label-schema.vendor="epicsoft LLC / Alexander Schwarz <info@epicsoft.one>" \
       org.label-schema.url="https://gitlab.com/epicsoft-networks/smarthost" \
       org.label-schema.vcs-url="https://gitlab.com/epicsoft-networks/smarthost/tree/master" \
+      org.label-schema.vcs-ref=${VCS_REF} \
       org.label-schema.version=${IMAGE_TAG} \
       org.label-schema.schema-version="1.0" \
       org.label-schema.build-date=${BUILD_DATE}
+
+LABEL org.opencontainers.image.title="Smarthost" \
+      org.opencontainers.image.description="Docker Image for Smarthost (SMTP relay) based on official Alpine image" \
+      org.opencontainers.image.vendor="epicsoft LLC" \
+      org.opencontainers.image.authors="Alexander Schwarz <info@epicsoft.one>" \
+      org.opencontainers.image.url="https://hub.docker.com/r/epicsoft/smarthost" \
+      org.opencontainers.image.source="https://gitlab.com/epicsoft-networks/smarthost" \
+      org.opencontainers.image.documentation="https://gitlab.com/epicsoft-networks/smarthost/blob/master/README.md" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version=${IMAGE_TAG} \
+      org.opencontainers.image.revision=${VCS_REF} \
+      org.opencontainers.image.created=${BUILD_DATE} \
+      org.opencontainers.image.base.name="docker.io/library/alpine:${IMAGE_TAG}"
 
 LABEL image.name="epicsoft_smarthost" \
       image.description="Docker Image for Smarthost (SMTP relay) based on official Alpine image" \
