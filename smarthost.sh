@@ -51,56 +51,98 @@ if [ -z "${SMARTHOST_ADD_MISSING_HEADERS}" ]; then
   exit 108
 fi
 
+#### A newline in any of these is never a valid value, and every one of them ends up in a
+#### file or on a postconf command line where a second line means something:
+####   - in SMARTHOST_FORCE_FROM it appends further header_checks rules, up to a REDIRECT
+####     that would divert mail without a trace in the configuration
+####   - in SMARTHOST_USER or SMARTHOST_PASSWORD it appends further entries to the sasl
+####     map, which are credentials for another relay host
+####   - anywhere postconf sees it, the run dies with the unhelpful
+####     'postconf: fatal: -e, -X, or -# accepts no multi-line input'
+#### A carriage return counts too: it does not end a line here, but it travels into the
+#### password unseen and turns an authentication failure into a puzzle.
+for SMARTHOST_VARIABLE in SMARTHOST_HOST \
+                          SMARTHOST_PORT \
+                          SMARTHOST_USER \
+                          SMARTHOST_PASSWORD \
+                          SMARTHOST_DOMAIN \
+                          SMARTHOST_TLS_SECURITY_LEVEL \
+                          SMARTHOST_NETWORKS \
+                          SMARTHOST_FORCE_FROM; do
+  case "${!SMARTHOST_VARIABLE}" in
+    *$'\n'* | *$'\r'* )
+      echo "The '${SMARTHOST_VARIABLE}' environment variable must be a single line."
+      exit 109
+      ;;
+  esac
+done
+
 echo "Set variables successfully checked"
 echo "Configuration is performed"
 
 #### Defaults
-postconf -e maillog_file=/dev/stdout
-postconf -e inet_interfaces=all
-postconf -e inet_protocols=ipv4
-postconf -e smtp_host_lookup=native,dns
-postconf -e smtp_sasl_auth_enable=yes
-postconf -e smtp_sasl_password_maps=lmdb:/etc/postfix/sasl_passwd
-postconf -e smtp_sasl_security_options=noanonymous
-postconf -e mydomain=${SMARTHOST_DOMAIN}
-postconf -e myhostname=mail.${SMARTHOST_DOMAIN}
-postconf -e myorigin=${SMARTHOST_DOMAIN}
-postconf -e mydestination=localhost
-postconf -e mynetworks=${SMARTHOST_NETWORKS}
+#### All values are quoted: an unquoted expansion is split on whitespace and postconf
+#### then aborts with "missing '=' after attribute name" - e.g. on a SMARTHOST_NETWORKS
+#### value written with a space after the comma
+postconf -e "maillog_file=/dev/stdout"
+postconf -e "inet_interfaces=all"
+postconf -e "inet_protocols=ipv4"
+postconf -e "smtp_host_lookup=native,dns"
+postconf -e "smtp_sasl_auth_enable=yes"
+postconf -e "smtp_sasl_password_maps=lmdb:/etc/postfix/sasl_passwd"
+postconf -e "smtp_sasl_security_options=noanonymous"
+postconf -e "mydomain=${SMARTHOST_DOMAIN}"
+postconf -e "myhostname=mail.${SMARTHOST_DOMAIN}"
+postconf -e "myorigin=${SMARTHOST_DOMAIN}"
+postconf -e "mydestination=localhost"
+postconf -e "mynetworks=${SMARTHOST_NETWORKS}"
 
-if [ ! -z "$(echo ${SMARTHOST_ADD_MISSING_HEADERS} | grep -i -E "(y|yes|true|1)")" ]; then
-  postconf -e always_add_missing_headers=yes
+if [ ! -z "$(echo "${SMARTHOST_ADD_MISSING_HEADERS}" | grep -i -E "(y|yes|true|1)")" ]; then
+  postconf -e "always_add_missing_headers=yes"
 else
-  postconf -e always_add_missing_headers=no
+  postconf -e "always_add_missing_headers=no"
 fi
 
 #### Host / Port / User / Pass
-postconf -e relayhost="[${SMARTHOST_HOST}]:${SMARTHOST_PORT}";
+postconf -e "relayhost=[${SMARTHOST_HOST}]:${SMARTHOST_PORT}"
 echo "[${SMARTHOST_HOST}]:${SMARTHOST_PORT} ${SMARTHOST_USER}:${SMARTHOST_PASSWORD}" > /etc/postfix/sasl_passwd
 postmap /etc/postfix/sasl_passwd
 
+#### The map holds the relay password in clear text, so keep it off world-read.
+#### It must stay readable for the 'postfix' user - smtp(8) runs as mail_owner and
+#### opens the map itself, so root-only 0600 would fail with "Permission denied".
+chown root:postfix /etc/postfix/sasl_passwd*
+chmod 640 /etc/postfix/sasl_passwd*
+
 #### TLS support
 if [ ! -z "${SMARTHOST_TLS_SECURITY_LEVEL}" ]; then
-  postconf -e smtp_tls_security_level=${SMARTHOST_TLS_SECURITY_LEVEL}
+  postconf -e "smtp_tls_security_level=${SMARTHOST_TLS_SECURITY_LEVEL}"
 fi
 
-#### Port 465
+#### Port 465 is implicit TLS, this deliberately overrides SMARTHOST_TLS_SECURITY_LEVEL
 if [ "${SMARTHOST_PORT}" == "465" ]; then
-  postconf -e smtp_tls_wrappermode=yes
-  postconf -e smtp_tls_security_level=encrypt
+  postconf -e "smtp_tls_wrappermode=yes"
+  postconf -e "smtp_tls_security_level=encrypt"
 fi
 
 #### Replace from address
+#### No postmap here: regexp maps are read as plain text, compiling one produces an
+#### unused .lmdb file in which postmap lowercases the pattern
 if [ ! -z "${SMARTHOST_FORCE_FROM}" ]; then
-  echo "/^From:.*$/ REPLACE From: ${SMARTHOST_FORCE_FROM}" > /etc/postfix/header_check
-  postconf -e smtp_header_checks=regexp:/etc/postfix/header_check
-  postmap /etc/postfix/header_check
+  #### In the replacement of a regexp map a '$' starts a back-reference. The pattern has
+  #### no capture group, so an unescaped '$' does not fail the start - it makes postfix
+  #### drop the rule at delivery time with 'out of range replacement index', and the mail
+  #### then goes out with its original From and status=sent. '$$' is the literal '$'.
+  SMARTHOST_FORCE_FROM_ESCAPED="${SMARTHOST_FORCE_FROM//\$/\$\$}"
+
+  echo "/^From:.*$/ REPLACE From: ${SMARTHOST_FORCE_FROM_ESCAPED}" > /etc/postfix/header_check
+  postconf -e "smtp_header_checks=regexp:/etc/postfix/header_check"
 fi
 
 #### Fix: 'error: open database /etc/postfix/aliases.lmdb: No such file or directory'
 #### see https://serverfault.com/a/1105901
 #### Thanks to Eric
-if [ ! -z "$(echo ${SMARTHOST_INIT_ALIAS_DATABASE} | grep -i -E "(y|yes|true|1)")" ]; then
+if [ ! -z "$(echo "${SMARTHOST_INIT_ALIAS_DATABASE}" | grep -i -E "(y|yes|true|1)")" ]; then
   echo "Initialize the alias database"
   newaliases
 fi
