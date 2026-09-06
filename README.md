@@ -34,9 +34,10 @@ This image can be used
 - `SMARTHOST_PASSWORD` The password to authenticate with the remote SMTP server ***required***
 - `SMARTHOST_DOMAIN` The domain to append to mails ***required***
 - `SMARTHOST_TLS_SECURITY_LEVEL` Configuring TLS support (default `may`)
-- `SMARTHOST_NETWORKS` The list of trusted remote SMTP clients  (default: `192.168.0.0/16,172.16.0.0/12`)
+- `SMARTHOST_NETWORKS` The list of trusted remote SMTP clients, comma separated **without spaces**  (default: `192.168.0.0/16,172.16.0.0/12`)
 - `SMARTHOST_ADD_MISSING_HEADERS` Add headers when not present (default: `true`)
-- `SMARTHOST_FORCE_FROM` Replaces the from address with the specified one (default: *empty*)
+- `SMARTHOST_FORCE_FROM` Replaces the from address with the specified one (default: *empty*)  
+  Rewrites the visible `From:` header only, not the envelope sender
 - `SMARTHOST_INIT_ALIAS_DATABASE` Initialize the alias database (default: `true`)
 - `TZ` Defines the time zone for the Docker container (default: *unset*)
 
@@ -49,6 +50,26 @@ This image can be used
 - `fingerprint` - Certificate fingerprint verification
 - `verify` - Mandatory server certificate verification
 - `secure` - Secure-channel TLS
+
+Every variable listed with a default must not be set to an empty value - the container
+refuses to start. On port `465` (implicit TLS) `SMARTHOST_TLS_SECURITY_LEVEL` is ignored:
+the connection is always wrapped in TLS and the level is forced to `encrypt`.
+
+## Exit codes
+
+The container validates its configuration before starting Postfix and exits with a
+distinct code per missing variable:
+
+| Code | Variable |
+| ---- | -------- |
+| `101` | `SMARTHOST_HOST` |
+| `102` | `SMARTHOST_PORT` |
+| `103` | `SMARTHOST_USER` |
+| `104` | `SMARTHOST_PASSWORD` |
+| `105` | `SMARTHOST_TLS_SECURITY_LEVEL` |
+| `106` | `SMARTHOST_NETWORKS` |
+| `107` | `SMARTHOST_DOMAIN` |
+| `108` | `SMARTHOST_ADD_MISSING_HEADERS` |
 
 ## Example
 
