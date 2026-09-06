@@ -7,14 +7,19 @@ image: docker:latest
 services:
   - docker:dind
 
+#### Multi-platform builds need a runner host with QEMU binfmt handlers registered
+default:
+  tags:
+    - imagex
+
 variables:
   DOCKER_REGISTRY: "epicsoft/smarthost"
+  BUILD_PLATFORMS: "linux/amd64,linux/arm64"
+  BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
 
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker login -u="$DOCKER_HUB_USER" -p="$DOCKER_HUB_TOKEN"
-  - docker context create epiccontext
-  - docker buildx create --driver=docker-container --name=epicbuilder --use --bootstrap epiccontext
 
 after_script:
   - docker logout $CI_REGISTRY
@@ -26,12 +31,17 @@ develop:
     VERSION: "develop"
   script:
     - echo "Build Smarthost Docker image with version '${VERSION}'"
+    #### Show the platforms the builder can serve (arm64 needs QEMU binfmt on the runner host)
+    - docker buildx inspect --bootstrap
     - docker buildx build . --push --pull --no-cache
-        --platform linux/amd64,linux/arm64
+        --platform $BUILD_PLATFORMS
         -t ${CI_REGISTRY_IMAGE}:${VERSION}
         --build-arg IMAGE_TAG=latest
         --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-    - docker run --rm ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version
+    #### Versions, once per platform
+    - for platform in $(echo $BUILD_PLATFORMS | tr ',' ' '); do
+        docker run --rm --platform $platform ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version;
+      done
   only:
     - develop
 
@@ -41,13 +51,18 @@ latest:
     VERSION: "latest"
   script:
     - echo "Build Smarthost Docker image with version '${VERSION}'"
+    #### Show the platforms the builder can serve (arm64 needs QEMU binfmt on the runner host)
+    - docker buildx inspect --bootstrap
     - docker buildx build . --push --pull --no-cache
-        --platform linux/amd64,linux/arm64
+        --platform $BUILD_PLATFORMS
         -t ${CI_REGISTRY_IMAGE}:${VERSION}
         -t ${DOCKER_REGISTRY}:${VERSION}
         --build-arg IMAGE_TAG=${VERSION}
         --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-    - docker run --rm ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version
+    #### Versions, once per platform
+    - for platform in $(echo $BUILD_PLATFORMS | tr ',' ' '); do
+        docker run --rm --platform $platform ${CI_REGISTRY_IMAGE}:${VERSION} postconf mail_version;
+      done
   retry: 2
   only:
     - master
