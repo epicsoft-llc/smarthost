@@ -46,7 +46,9 @@ ENV SMARTHOST_ADD_MISSING_HEADERS="true"
 ENV SMARTHOST_FORCE_FROM=""
 ENV SMARTHOST_INIT_ALIAS_DATABASE="true"
 
-RUN apk --no-cache add bash \
+#### packages of the base image lag behind the Alpine repository - the upgrade brings their security fixes
+RUN apk --no-cache upgrade \
+ && apk --no-cache add bash \
                        tzdata \
                        postfix \
                        ca-certificates \
